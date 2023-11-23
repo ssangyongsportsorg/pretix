@@ -12,7 +12,7 @@ Deploy Pretix server with CI/CD on Elestio
 
 You can open Pretix UI here:
 
-    URL: https://[CI_CD_DOMAIN]
+    URL: https://[CI_CD_DOMAIN]/control/login
     email: [ADMIN_EMAIL]
     password: [ADMIN_PASSWORD]
 
