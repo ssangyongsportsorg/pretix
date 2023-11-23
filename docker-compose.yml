@@ -8,10 +8,12 @@ services:
       - db
       - redis
     volumes:
-      - ./data:/data
-      - ./conf:/etc/pretix
+      - ./etc/pretix:/etc/pretix
+      - pretix-data:/data
+      - ./scripts/0001_initial.py:/pretix/src/pretix/base/migrations/0001_initial.py
+      - ./scripts/0001_squashed_0028_auto_20160816_1242.py:/pretix/src/pretix/base/migrations/0001_squashed_0028_auto_20160816_1242.py
     ports:
-      - "172.17.0.1:27712:80" # my port 80 was already in use i choose 8001, feel free to pick your prefer port
+      - "172.17.0.1:27712:80"
 
   db:
     image: elestio/postgres:15
@@ -19,13 +21,14 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=pretix
     volumes:
       - ./postgres:/var/lib/postgresql/data
     ports:
       - 172.17.0.1:59313:5432
 
   redis:
-    image: elestio/redis:7.0
+    image: redis:latest
     restart: always
 
   pgadmin4:
@@ -39,3 +42,11 @@ services:
       - "172.17.0.1:42511:8080"
     volumes:
       - ./servers.json:/pgadmin4/servers.json
+
+volumes:
+  pretix-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${PWD}/data
+      o: bind

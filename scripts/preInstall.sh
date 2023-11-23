@@ -1,14 +1,34 @@
 #set env vars
 set -o allexport; source .env; set +o allexport;
 
-SECRET_KEY=${SECRET_KEY:-`openssl rand -hex 32`}
 
-cat << EOT >> ./.env
 
-SECRET_KEY=${SECRET_KEY}
+cat <<EOT > ./servers.json
+{
+    "Servers": {
+        "1": {
+            "Name": "local",
+            "Group": "Servers",
+            "Host": "172.17.0.1",
+            "Port": 59313,
+            "MaintenanceDB": "postgres",
+            "SSLMode": "prefer",
+            "Username": "postgres",
+            "PassFile": "/pgpass"
+        }
+    }
+}
 EOT
 
-cat <<EOT > ./conf/pretix.cfg
+
+mkdir -p ./data
+chown -R 15371:15371 ./data
+mkdir -p ./etc
+mkdir -p ./etc/pretix
+
+
+
+cat <<EOT > ./etc/pretix/pretix.cfg
 [pretix]
 instance_name=${DOMAIN}         
 url=https://${DOMAIN}            
@@ -51,19 +71,10 @@ broker=redis://redis/2
 
 EOT
 
-cat <<EOT > ./servers.json
-{
-    "Servers": {
-        "1": {
-            "Name": "local",
-            "Group": "Servers",
-            "Host": "172.17.0.1",
-            "Port": 59313,
-            "MaintenanceDB": "postgres",
-            "SSLMode": "prefer",
-            "Username": "postgres",
-            "PassFile": "/pgpass"
-        }
-    }
-}
-EOT
+chown -R 15371:15371 ./etc/pretix/
+chmod 0700 ./etc/pretix/pretix.cfg
+
+sed -i "s~EMAIL_TO_CHANGE~${ADMIN_EMAIL}~g" ./scripts/0001_initial.py
+sed -i "s~EMAIL_TO_CHANGE~${ADMIN_EMAIL}~g" ./scripts/0001_squashed_0028_auto_20160816_1242.py
+sed -i "s~PASSWORD_TO_CHANGE~${ADMIN_PASSWORD}~g" ./scripts/0001_initial.py
+sed -i "s~PASSWORD_TO_CHANGE~${ADMIN_PASSWORD}~g" ./scripts/0001_squashed_0028_auto_20160816_1242.py
