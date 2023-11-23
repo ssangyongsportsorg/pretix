@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  pretix:
+    image: "pretix/standalone:stable"
+    restart: always
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./data:/data
+      - ./conf:/etc/pretix
+    ports:
+      - "172.17.0.1:27712:80" # my port 80 was already in use i choose 8001, feel free to pick your prefer port
+
+  db:
+    image: elestio/postgres:15
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 172.17.0.1:59313:5432
+
+  redis:
+    image: elestio/redis:7.0
+    restart: always
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - "172.17.0.1:42511:8080"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
