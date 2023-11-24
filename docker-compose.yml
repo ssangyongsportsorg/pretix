@@ -2,7 +2,7 @@ version: "3"
 
 services:
   pretix:
-    image: "pretix/standalone:stable"
+    image: "pretix/standalone:${SOFTWARE_VERSION_TAG}"
     restart: always
     depends_on:
       - db
