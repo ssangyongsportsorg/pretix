@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+mkdir -p ./data
+chown -R 15371:15371 ./data
+mkdir -p ./etc
+mkdir -p ./etc/pretix
+
 cat <<EOT > ./etc/pretix/pretix.cfg
 [pretix]
 instance_name=${DOMAIN}         
