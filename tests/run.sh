@@ -57,3 +57,5 @@ sed -i "s~PASSWORD_TO_CHANGE~${ADMIN_PASSWORD}~g" ./scripts/0001_initial.py
 sed -i "s~PASSWORD_TO_CHANGE~${ADMIN_PASSWORD}~g" ./scripts/0001_squashed_0028_auto_20160816_1242.py
 docker-compose up -d;
 sleep 150s;
+rm -rf ./data
+rm -rf ./etc
